@@ -1,0 +1,776 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NoteLite 使用指南</title>
+<style>
+  :root {
+    --primary: #1f6aa5;
+    --primary-dark: #155380;
+    --accent: #f39c12;
+    --success: #27ae60;
+    --danger: #e74c3c;
+    --warning: #e67e22;
+    --info: #16a085;
+    --bg: #f5f7fa;
+    --card: #ffffff;
+    --text: #2c3e50;
+    --muted: #7f8c8d;
+    --border: #e0e6ed;
+    --code-bg: #2c3e50;
+    --code-text: #ecf0f1;
+    --sidebar-w: 260px;
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    margin: 0;
+    font-family: "Microsoft YaHei", "Segoe UI", -apple-system, BlinkMacSystemFont, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.7;
+    font-size: 16px;
+  }
+
+  /* ========== 顶部 Hero ========== */
+  .hero {
+    background: linear-gradient(135deg, #1f6aa5 0%, #9b59b6 100%);
+    color: white;
+    padding: 60px 30px 50px;
+    text-align: center;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+  }
+  .hero h1 {
+    margin: 0 0 12px;
+    font-size: 2.6em;
+    font-weight: 700;
+    letter-spacing: 2px;
+  }
+  .hero .tagline {
+    font-size: 1.15em;
+    opacity: 0.92;
+    margin-bottom: 24px;
+  }
+  .hero .badges span {
+    display: inline-block;
+    background: rgba(255,255,255,0.2);
+    padding: 6px 14px;
+    margin: 4px;
+    border-radius: 20px;
+    font-size: 0.9em;
+    backdrop-filter: blur(4px);
+  }
+
+  /* ========== 布局：侧边栏 + 内容 ========== */
+  .layout {
+    display: flex;
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 30px 20px;
+    gap: 30px;
+  }
+  .sidebar {
+    width: var(--sidebar-w);
+    flex-shrink: 0;
+    position: sticky;
+    top: 20px;
+    align-self: flex-start;
+    background: var(--card);
+    border-radius: 12px;
+    padding: 20px 16px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    max-height: calc(100vh - 40px);
+    overflow-y: auto;
+  }
+  .sidebar h3 {
+    margin: 0 0 12px;
+    color: var(--primary);
+    font-size: 1.05em;
+    border-bottom: 2px solid var(--primary);
+    padding-bottom: 8px;
+  }
+  .sidebar ol {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    counter-reset: nav;
+  }
+  .sidebar li {
+    counter-increment: nav;
+    margin: 0;
+  }
+  .sidebar a {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 10px;
+    text-decoration: none;
+    color: var(--text);
+    border-radius: 6px;
+    font-size: 0.93em;
+    transition: all 0.18s;
+  }
+  .sidebar a::before {
+    content: counter(nav);
+    background: var(--bg);
+    color: var(--muted);
+    font-weight: 600;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.78em;
+    flex-shrink: 0;
+    transition: all 0.18s;
+  }
+  .sidebar a:hover {
+    background: #eaf3fb;
+    color: var(--primary);
+  }
+  .sidebar a:hover::before {
+    background: var(--primary);
+    color: white;
+  }
+  .content {
+    flex: 1;
+    min-width: 0;
+  }
+  section {
+    background: var(--card);
+    border-radius: 12px;
+    padding: 28px 32px;
+    margin-bottom: 22px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+  }
+  section h2 {
+    color: var(--primary);
+    margin: 0 0 18px;
+    padding-bottom: 12px;
+    border-bottom: 3px solid var(--primary);
+    font-size: 1.6em;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  section h2 .num {
+    background: var(--primary);
+    color: white;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.7em;
+    font-weight: 600;
+  }
+  section h3 {
+    color: var(--primary-dark);
+    margin-top: 22px;
+    margin-bottom: 8px;
+    font-size: 1.15em;
+  }
+  p { margin: 10px 0; }
+
+  /* 表格 */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 14px 0;
+    background: white;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+  }
+  th, td {
+    padding: 11px 14px;
+    text-align: left;
+    border-bottom: 1px solid var(--border);
+  }
+  th {
+    background: var(--primary);
+    color: white;
+    font-weight: 600;
+  }
+  tbody tr:nth-child(even) { background: #fafbfc; }
+  tbody tr:hover { background: #eaf3fb; }
+
+  /* 代码 / kbd */
+  code {
+    background: #eef2f6;
+    color: #c0392b;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-family: "Consolas", "Courier New", monospace;
+    font-size: 0.92em;
+  }
+  pre {
+    background: var(--code-bg);
+    color: var(--code-text);
+    padding: 14px 18px;
+    border-radius: 8px;
+    overflow-x: auto;
+    font-size: 0.9em;
+    line-height: 1.5;
+  }
+  pre code {
+    background: transparent;
+    color: inherit;
+    padding: 0;
+  }
+  kbd {
+    display: inline-block;
+    padding: 3px 8px;
+    background: linear-gradient(180deg, #f6f8fa, #e1e4e8);
+    border: 1px solid #c6cbd1;
+    border-radius: 5px;
+    box-shadow: 0 1px 0 rgba(27,31,35,0.1);
+    font-family: "Consolas", "Courier New", monospace;
+    font-size: 0.88em;
+    color: #24292e;
+  }
+
+  /* 提示框 */
+  .tip, .warn, .info, .note {
+    border-left: 4px solid;
+    padding: 12px 16px;
+    margin: 14px 0;
+    border-radius: 0 6px 6px 0;
+    font-size: 0.96em;
+  }
+  .tip   { background: #e8f8f5; border-color: var(--success); }
+  .warn  { background: #fdebd0; border-color: var(--warning); }
+  .info  { background: #ebf5fb; border-color: var(--primary); }
+  .note  { background: #fdf2e9; border-color: var(--accent); }
+  .tip strong, .warn strong, .info strong, .note strong { font-weight: 700; }
+
+  /* 步骤卡片 */
+  .steps {
+    list-style: none;
+    padding: 0;
+    counter-reset: step;
+    margin: 16px 0;
+  }
+  .steps li {
+    counter-increment: step;
+    background: #f8fafc;
+    border-left: 4px solid var(--primary);
+    padding: 12px 18px 12px 56px;
+    margin: 10px 0;
+    border-radius: 0 6px 6px 0;
+    position: relative;
+  }
+  .steps li::before {
+    content: counter(step);
+    position: absolute;
+    left: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: var(--primary);
+    color: white;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 0.95em;
+  }
+
+  /* 按钮 chip */
+  .chip {
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: 14px;
+    font-size: 0.85em;
+    font-weight: 600;
+    color: white;
+    margin: 0 2px;
+  }
+  .chip-green { background: var(--success); }
+  .chip-blue  { background: var(--primary); }
+  .chip-orange{ background: var(--warning); }
+  .chip-red   { background: var(--danger); }
+  .chip-purple{ background: #8e44ad; }
+  .chip-cyan  { background: var(--info); }
+  .chip-gray  { background: var(--muted); }
+
+  /* 颜色色块（滚动条状态） */
+  .color-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 12px;
+    margin: 14px 0;
+  }
+  .color-card {
+    border-radius: 8px;
+    color: white;
+    padding: 16px;
+    text-align: center;
+    font-weight: 600;
+  }
+  .color-card .label { font-size: 1.1em; margin-bottom: 4px; }
+  .color-card .desc  { font-size: 0.85em; opacity: 0.9; font-weight: 400; }
+
+  /* 界面示意图 */
+  .layout-demo {
+    background: #1e293b;
+    color: #e2e8f0;
+    padding: 18px;
+    border-radius: 8px;
+    font-family: "Consolas", monospace;
+    font-size: 0.78em;
+    line-height: 1.4;
+    overflow-x: auto;
+  }
+
+  /* FAQ */
+  details {
+    background: #f8fafc;
+    border-left: 4px solid var(--primary);
+    padding: 14px 18px;
+    margin: 10px 0;
+    border-radius: 0 6px 6px 0;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+  details:hover { background: #eef4fa; }
+  details[open] { background: #eaf3fb; }
+  details summary {
+    font-weight: 600;
+    color: var(--primary);
+    list-style: none;
+    position: relative;
+    padding-right: 24px;
+  }
+  details summary::-webkit-details-marker { display: none; }
+  details summary::after {
+    content: "+";
+    position: absolute;
+    right: 0;
+    top: 0;
+    font-size: 1.4em;
+    color: var(--primary);
+    font-weight: 400;
+    transition: transform 0.2s;
+  }
+  details[open] summary::after {
+    content: "−";
+  }
+  details p { margin: 10px 0 0; color: var(--text); }
+  details ul { margin: 8px 0 0 20px; }
+
+  /* footer */
+  footer {
+    text-align: center;
+    padding: 30px 20px;
+    color: var(--muted);
+    font-size: 0.9em;
+  }
+  footer a { color: var(--primary); }
+
+  /* 响应式 */
+  @media (max-width: 900px) {
+    .layout { flex-direction: column; padding: 20px 12px; }
+    .sidebar { width: 100%; position: static; max-height: none; }
+    section { padding: 20px 18px; }
+    section h2 { font-size: 1.3em; }
+    .hero { padding: 40px 20px 35px; }
+    .hero h1 { font-size: 2em; }
+  }
+
+  /* 回到顶部 */
+  #toTop {
+    position: fixed;
+    right: 30px;
+    bottom: 30px;
+    background: var(--primary);
+    color: white;
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    border: none;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    font-size: 1.4em;
+    opacity: 0;
+    transform: translateY(20px);
+    transition: all 0.3s;
+    z-index: 999;
+  }
+  #toTop.show { opacity: 1; transform: translateY(0); }
+  #toTop:hover { background: var(--primary-dark); }
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <h1>📘 NoteLite 使用指南</h1>
+  <div class="tagline">一款面向个人效率管理的桌面智能记事本</div>
+  <div class="badges">
+    <span>📌 任务管理</span>
+    <span>📎 附件支持</span>
+    <span>🗑 回收站</span>
+    <span>🔔 桌面提醒</span>
+    <span>🤖 AI 智能总结</span>
+  </div>
+</div>
+
+<div class="layout">
+
+  <!-- 侧边导航 -->
+  <nav class="sidebar">
+    <h3>📑 目录</h3>
+    <ol>
+      <li><a href="#sec-1">快速开始</a></li>
+      <li><a href="#sec-2">主界面布局</a></li>
+      <li><a href="#sec-3">添加事件</a></li>
+      <li><a href="#sec-4">管理事件</a></li>
+      <li><a href="#sec-5">拖拽排序</a></li>
+      <li><a href="#sec-6">附件管理</a></li>
+      <li><a href="#sec-7">搜索 / 视图</a></li>
+      <li><a href="#sec-8">滚动提醒条</a></li>
+      <li><a href="#sec-9">桌面卡片提醒</a></li>
+      <li><a href="#sec-10">回收站</a></li>
+      <li><a href="#sec-11">总结 + AI 建议</a></li>
+      <li><a href="#sec-12">系统托盘</a></li>
+      <li><a href="#sec-13">快捷键</a></li>
+      <li><a href="#sec-14">外观主题</a></li>
+      <li><a href="#sec-15">数据存储</a></li>
+      <li><a href="#sec-16">常见问题</a></li>
+    </ol>
+  </nav>
+
+  <!-- 正文 -->
+  <main class="content">
+
+    <section id="sec-1">
+      <h2><span class="num">1</span>快速开始</h2>
+      <ol class="steps">
+        <li>双击 <code>NoteLite.exe</code>（或开始菜单 → NoteLite）启动程序。</li>
+        <li>首次启动若未配置 DeepSeek API Key，会弹出引导窗口；可点击「<b>稍后</b>」或「<b>不再提示</b>」跳过，<b>不影响其他功能</b>。</li>
+        <li>主窗口出现后即可在左侧添加事件。</li>
+      </ol>
+      <div class="info">
+        <strong>💡 提示：</strong>关闭窗口时默认 <b>最小化到系统托盘</b>，并不退出。要彻底退出请右键托盘图标 → 退出。
+      </div>
+    </section>
+
+    <section id="sec-2">
+      <h2><span class="num">2</span>主界面布局</h2>
+      <pre class="layout-demo">┌────────────────────────────────────────────────────────────┐
+│ 🔔 提醒  ◀━━━━━ 滚动提醒条 ━━━━━▶  共 N 条               │ ← 顶部状态条
+├──────────────┬─────────────────────────────────────────────┤
+│              │  搜索: [_____________]   Ctrl+N 新建 ...     │
+│              │  ┌─ 未完成 ─┬─ 已完成 ─┐                    │
+│  左侧面板    │  │                                            │
+│              │  │  📌 事件标题（拖拽手柄 ≡）                │
+│  · 输入区    │  │     开始: 2026-05-06 | 截止: 2026-05-10  │
+│  · 时间      │  │     [完成] [编辑] [附件] [删除]           │
+│  · 优先级    │  │                                            │
+│  · 添加      │  │  📌 ...                                    │
+│  · 总结      │  │                                            │
+│  · 回收站    │  │                                            │
+│  · 主题      │  │                                            │
+│  · 统计      │  │                                            │
+└──────────────┴─────────────────────────────────────────────┘</pre>
+    </section>
+
+    <section id="sec-3">
+      <h2><span class="num">3</span>添加事件</h2>
+      <p>在左侧面板按字段填写，最后点 <span class="chip chip-blue">添加事件</span>：</p>
+      <table>
+        <thead><tr><th>字段</th><th>说明</th></tr></thead>
+        <tbody>
+          <tr><td><b>事件描述</b></td><td>任务标题/简述（必填）</td></tr>
+          <tr><td><b>+</b> 按钮（描述框右侧）</td><td>选择附件文件（可多选；图片 / Excel / PDF / 文档等）</td></tr>
+          <tr><td><b>开始时间</b></td><td>任务开始日期；点 📅 可弹出日历选择</td></tr>
+          <tr><td><b>截止时间</b></td><td>任务截止日期；不可早于开始时间</td></tr>
+          <tr><td><b>优先级</b></td>
+              <td><span class="chip chip-red">高</span><span class="chip chip-orange">中</span><span class="chip chip-green">低</span> 决定卡片左侧色条颜色</td></tr>
+          <tr><td><b>添加事件</b></td><td>点击后保存到「未完成」列表</td></tr>
+        </tbody>
+      </table>
+      <div class="tip"><strong>✅ 小技巧：</strong>添加成功后输入框自动清空，方便连续添加多个事件。</div>
+    </section>
+
+    <section id="sec-4">
+      <h2><span class="num">4</span>管理事件</h2>
+      <p>每张事件卡片右下角有以下操作按钮：</p>
+      <table>
+        <thead><tr><th>按钮</th><th>作用</th></tr></thead>
+        <tbody>
+          <tr><td><span class="chip chip-green">完成</span></td><td>把事件标记为已完成，自动记录完成时间，移到「已完成」标签页</td></tr>
+          <tr><td><span class="chip chip-orange">撤回</span></td><td>（已完成事件下出现）撤回到「未完成」</td></tr>
+          <tr><td><span class="chip chip-blue">编辑</span></td><td>弹出编辑对话框，可修改标题、时间、优先级、附件</td></tr>
+          <tr><td><span class="chip chip-cyan">附件</span></td><td>（仅有附件时出现）查看 / 打开 / 定位附件</td></tr>
+          <tr><td><span class="chip chip-red">删除</span></td><td>移入回收站（5 天后自动彻底删除）</td></tr>
+        </tbody>
+      </table>
+      <div class="warn"><strong>⚠ 逾期提示：</strong>未完成且截止时间早于今日的事件，会在卡片信息行额外显示「<b>逾期!</b>」。</div>
+    </section>
+
+    <section id="sec-5">
+      <h2><span class="num">5</span>拖拽排序</h2>
+      <ul>
+        <li>每张卡片左侧有一个 <code>≡</code> 拖拽手柄。</li>
+        <li><b>按住手柄或卡片标题</b>向上 / 向下拖动，松开后即可调整顺序。</li>
+        <li>排序在「未完成」与「已完成」两个 Tab 内 <b>独立保存</b>。</li>
+        <li>顺序信息持久化，重启后保持不变。</li>
+      </ul>
+    </section>
+
+    <section id="sec-6">
+      <h2><span class="num">6</span>附件管理</h2>
+
+      <h3>添加附件</h3>
+      <ul>
+        <li>添加事件 <b>之前</b>：点击事件描述框右侧的 <span class="chip chip-gray">+</span> 按钮选择文件，状态会显示在下方"附件: xxx"。</li>
+        <li>编辑事件时：在编辑对话框中点 <b>➕ 添加附件</b> / <b>清空附件</b>。</li>
+      </ul>
+
+      <h3>查看附件</h3>
+      <p>点击事件卡片的 <span class="chip chip-cyan">附件</span> 按钮，弹出附件列表：</p>
+      <ul>
+        <li>不同类型显示不同图标：🖼 图片 / 📊 表格 / 📕 PDF / 📝 文档 / 🎵 音频 / 🎬 视频 / 🐍 代码 / 📄 其他</li>
+        <li><b>打开</b> — 用系统默认程序打开文件</li>
+        <li><b>目录</b> — 在资源管理器中定位文件</li>
+        <li>缺失文件以红色 ❌ 标注</li>
+      </ul>
+
+      <div class="tip"><strong>📁 安全机制：</strong>所有附件会被复制到程序目录的 <code>attachments/</code> 子目录，独立于源文件存放，删除原文件不影响附件。</div>
+    </section>
+
+    <section id="sec-7">
+      <h2><span class="num">7</span>搜索与切换视图</h2>
+      <ul>
+        <li><b>搜索：</b>右上方搜索框，输入关键字实时过滤事件标题（不区分大小写）。</li>
+        <li><b>未完成 / 已完成：</b>上方两个 Tab 切换。</li>
+      </ul>
+    </section>
+
+    <section id="sec-8">
+      <h2><span class="num">8</span>滚动提醒条</h2>
+      <p>顶部彩色横条会 <b>自动横向滚动</b> 展示所有「已开始未完成」的事件。颜色随状态变化：</p>
+      <div class="color-grid">
+        <div class="color-card" style="background:#27ae60;">
+          <div class="label">✓ 全清</div>
+          <div class="desc">没有进行中的事件</div>
+        </div>
+        <div class="color-card" style="background:#16a085;">
+          <div class="label">▶ 进行中</div>
+          <div class="desc">事件在执行期内</div>
+        </div>
+        <div class="color-card" style="background:#e67e22;">
+          <div class="label">⏰ 今日</div>
+          <div class="desc">今天截止的事件</div>
+        </div>
+        <div class="color-card" style="background:#e74c3c;">
+          <div class="label">⚠ 逾期</div>
+          <div class="desc">超过截止日期</div>
+        </div>
+      </div>
+      <p>右侧徽章显示「共 N 条」未完成事件数量。每条事件用 <code>●</code> 分隔依次滚动。</p>
+    </section>
+
+    <section id="sec-9">
+      <h2><span class="num">9</span>桌面卡片提醒</h2>
+      <p>事件到达「开始时间」或「截止时间」后，桌面右下角会自动弹出 <b>通知卡片</b>：</p>
+      <ul>
+        <li>每隔 <b>2 小时</b> 提醒一次，共 <b>3 次</b> 后停止</li>
+        <li>卡片 <b>15 秒</b> 后自动消失，也可点击 ✕ 立即关闭</li>
+        <li>多张卡片自动堆叠不重叠</li>
+        <li>提醒计数会被持久化，下次重启不会重复弹之前的提醒</li>
+      </ul>
+      <div class="info"><strong>💡 完成事件后</strong>，所有未触发的提醒立即作废，不会再打扰你。</div>
+    </section>
+
+    <section id="sec-10">
+      <h2><span class="num">10</span>回收站</h2>
+      <p>点击左侧 <span class="chip chip-purple">🗑 回收站</span> 按钮：</p>
+      <ul>
+        <li>列表显示所有被删除的事件、删除时间、剩余保留天数</li>
+        <li><span class="chip chip-green">恢复</span> — 还原到「未完成」列表</li>
+        <li><span class="chip chip-red">彻底删除</span> — 立刻物理删除（含附件文件，不可恢复）</li>
+        <li><b>清空回收站</b> — 一键彻底清空</li>
+      </ul>
+      <div class="warn"><strong>⏳ 自动清理：</strong>回收站内事件 <b>5 天</b>后自动被永久删除（含附件文件）。</div>
+    </section>
+
+    <section id="sec-11">
+      <h2><span class="num">11</span>本周总结 + DeepSeek AI 智能建议</h2>
+
+      <h3>📝 基础总结</h3>
+      <p>点击左侧 <span class="chip chip-blue">本周总结</span> 按钮，弹出窗口列出本周（周一 ~ 周日）的：</p>
+      <ul>
+        <li>已完成事件（含完成时间）</li>
+        <li>未完成事件（含截止日期）</li>
+      </ul>
+      <p>可点 <b>一键复制</b> 把全文复制到剪贴板，方便发周报。</p>
+
+      <h3>🤖 AI 智能建议（DeepSeek）</h3>
+      <ol class="steps">
+        <li>在「本周总结」按钮 <b>右侧</b> 勾选 <span class="chip chip-purple">DeepSeek</span> 复选框。</li>
+        <li>点击「本周总结」后，AI 会在窗口中追加：
+          <ul>
+            <li>工作总结</li>
+            <li>进展评估</li>
+            <li>未完成事项的可行性建议与优先级排序</li>
+            <li>下周计划建议</li>
+          </ul>
+        </li>
+      </ol>
+      <div class="note">
+        <strong>🔑 前置条件：</strong>需要在系统中设置环境变量 <code>DEEPSEEK_API_KEY</code>。
+        <ul>
+          <li>应用首次启动时会引导你设置；也可手动添加。</li>
+          <li>在 <a href="https://platform.deepseek.com/api_keys" target="_blank">platform.deepseek.com/api_keys</a> 申请 Key。</li>
+          <li>设置完毕后 <b>重新启动 NoteLite</b> 才能生效。</li>
+        </ul>
+      </div>
+    </section>
+
+    <section id="sec-12">
+      <h2><span class="num">12</span>系统托盘 / 后台运行</h2>
+      <ul>
+        <li>关闭主窗口（点 ✕）→ <b>最小化到系统托盘</b>，程序仍在后台运行（提醒/计时正常工作）。</li>
+        <li>右键托盘图标：
+          <ul>
+            <li><b>显示窗口</b> — 唤回主界面</li>
+            <li><b>退出</b> — 真正关闭程序</li>
+          </ul>
+        </li>
+      </ul>
+    </section>
+
+    <section id="sec-13">
+      <h2><span class="num">13</span>快捷键速查</h2>
+      <table>
+        <thead><tr><th>快捷键</th><th>作用</th></tr></thead>
+        <tbody>
+          <tr><td><kbd>Ctrl</kbd> + <kbd>N</kbd></td><td>焦点切到「事件描述」输入框，开始新建</td></tr>
+          <tr><td><kbd>Ctrl</kbd> + <kbd>F</kbd></td><td>焦点切到搜索框</td></tr>
+          <tr><td><kbd>Ctrl</kbd> + <kbd>S</kbd></td><td>打开「本周总结」窗口</td></tr>
+          <tr><td><kbd>Ctrl</kbd> + <kbd>D</kbd></td><td>删除当前未完成列表的第一条事件</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section id="sec-14">
+      <h2><span class="num">14</span>外观主题</h2>
+      <p>左侧 <span class="chip chip-gray">暗色</span> / <span class="chip chip-orange">亮色</span> 按钮即时切换 UI 主题。</p>
+    </section>
+
+    <section id="sec-15">
+      <h2><span class="num">15</span>数据存储位置</h2>
+      <p>所有数据保存在程序所在目录，便于备份/迁移：</p>
+      <table>
+        <thead><tr><th>文件 / 目录</th><th>内容</th></tr></thead>
+        <tbody>
+          <tr><td><code>events_data.json</code></td><td>所有未删除事件</td></tr>
+          <tr><td><code>trash_data.json</code></td><td>回收站事件（5 天保留）</td></tr>
+          <tr><td><code>attachments/</code></td><td>附件副本目录</td></tr>
+          <tr><td><code>.deepseek_skip</code></td><td>仅在你点了「不再提示」时存在</td></tr>
+        </tbody>
+      </table>
+      <div class="tip"><strong>💾 备份提示：</strong>把以上文件/目录整体复制走即可完整迁移到新机器。</div>
+    </section>
+
+    <section id="sec-16">
+      <h2><span class="num">16</span>常见问题 FAQ</h2>
+
+      <details>
+        <summary>Q1. 关闭主窗口程序为什么还在运行？</summary>
+        <p>默认最小化到系统托盘，方便接收提醒。需要彻底退出请右键托盘 → <b>退出</b>。</p>
+      </details>
+
+      <details>
+        <summary>Q2. 设置了 DEEPSEEK_API_KEY 但 AI 总结仍提示未配置？</summary>
+        <p>环境变量更改后需要 <b>重启程序</b> 才能生效；如果是在 cmd 里 <code>setx</code>，请关掉所有旧的 NoteLite 窗口再重新打开。</p>
+      </details>
+
+      <details>
+        <summary>Q3. 提醒卡片没弹出？</summary>
+        <ul>
+          <li>检查事件「开始时间/截止时间」是否已到</li>
+          <li>同一事件每个时间点最多提醒 3 次</li>
+          <li>完成或删除事件后不再提醒</li>
+        </ul>
+      </details>
+
+      <details>
+        <summary>Q4. 误删事件能恢复吗？</summary>
+        <p>可以。打开 <span class="chip chip-purple">🗑 回收站</span> → 找到事件 → 点 <b>恢复</b>。<b>5 天内</b>有效。</p>
+      </details>
+
+      <details>
+        <summary>Q5. 如何修改提醒间隔（2 小时）或最大提醒次数（3 次）？</summary>
+        <p>编辑源码 <code>notepad_app.py</code> 顶部常量：</p>
+        <pre><code>REMIND_INTERVAL_SECONDS = 2 * 60 * 60   # 提醒间隔（秒）
+REMIND_MAX_TIMES = 3                     # 单事件单时间点最多提醒次数
+TRASH_RETAIN_DAYS = 5                    # 回收站保留天数</code></pre>
+      </details>
+
+      <details>
+        <summary>Q6. 安装包安装向导是英文，应用本身呢？</summary>
+        <p>应用界面是 <b>中文</b>，仅安装向导（Next / Cancel / Install）是英文。</p>
+      </details>
+
+      <details>
+        <summary>Q7. 附件丢失怎么办？</summary>
+        <p>附件物理文件存储在 <code>attachments/</code>。如该目录被移动或删除，事件附件按钮会显示「❌ 缺失」。请保持 <code>attachments/</code> 与 <code>events_data.json</code> 在同一目录。</p>
+      </details>
+
+      <details>
+        <summary>Q8. 程序运行需要安装 Python 吗？</summary>
+        <p><b>完全不需要。</b>NoteLite 是绿色发行版，已内嵌 Python 运行时和所有依赖，双击即用。</p>
+      </details>
+    </section>
+
+  </main>
+</div>
+
+<footer>
+  <p>📘 NoteLite 使用指南 · 祝你高效率每一天 ✨</p>
+  <p>如发现问题或有功能建议，欢迎反馈给开发者</p>
+</footer>
+
+<button id="toTop" title="回到顶部">↑</button>
+
+<script>
+  // 回到顶部
+  const toTop = document.getElementById('toTop');
+  window.addEventListener('scroll', () => {
+    if (window.scrollY > 400) toTop.classList.add('show');
+    else toTop.classList.remove('show');
+  });
+  toTop.addEventListener('click', () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  });
+
+  // 当前章节高亮
+  const sections = document.querySelectorAll('section[id^="sec-"]');
+  const navLinks = document.querySelectorAll('.sidebar a');
+  window.addEventListener('scroll', () => {
+    let current = '';
+    sections.forEach(s => {
+      const top = s.getBoundingClientRect().top;
+      if (top < 120) current = s.id;
+    });
+    navLinks.forEach(a => {
+      a.style.background = '';
+      a.style.color = '';
+      if (a.getAttribute('href') === '#' + current) {
+        a.style.background = '#1f6aa5';
+        a.style.color = 'white';
+      }
+    });
+  });
+</script>
+
+</body>
+</html>
