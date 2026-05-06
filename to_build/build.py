@@ -37,7 +37,7 @@ DIST = ROOT / "dist"
 BUILD = ROOT / "build"
 INSTALLER_DIR = ROOT / "installer"
 ISS_FILE = INSTALLER_DIR / "notepad_setup.iss"
-ENTRY = ROOT / "notepad_app.py"
+ENTRY = ROOT / "build/notepad_app.py"
 
 
 def run(cmd, **kw):
